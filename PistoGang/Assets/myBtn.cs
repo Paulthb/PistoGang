@@ -17,11 +17,15 @@ public class myBtn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int buttonValue = UduinoManager.Instance.digitalRead(2);
+        int buttonValueGreen = UduinoManager.Instance.digitalRead(2);
+        int buttonValueRed = UduinoManager.Instance.digitalRead(4);
 
-        if (buttonValue == 0)
+        if (buttonValueGreen == 0)
             textZone.text = "Down";
+        else if (buttonValueRed == 0)
+            textZone.text = "YOLO";
         else
             textZone.text = "Up";
+
     }
 }
