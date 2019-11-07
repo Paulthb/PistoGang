@@ -6,157 +6,215 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    private bool canGameStart;
-    private bool canRoundBegin;
+    private bool gameCanStart;
+    public bool roundCanBegin;
     private bool isPlaying;
-    private bool roundFinished;
     private bool weaponChoosed;
-    private bool roundIsPlayed;
+    private bool gameHasBegun;
 
-    private int quickestPlayer;
     private int round;
 
     // PLAYER 1
-    private int player1Btn0, player1Btn1, player1Btn2, player1Btn3;     // l'état 0 ou 1 des boutons de la main, 3 etant celui le plus près du pouce
     private int weaponOnPlayer1;
+    private PlayerController playerOneController;
+    private int scorePlayerOne;
 
     // PLAYER 2
-    private int player2Btn, player2Btn1, player2Btn2, player2Btn3;     // l'état 0 ou 1 des boutons de la main, 3 etant celui le plus près du pouce
     private int weaponOnPlayer2;
+    private PlayerController playerTwoController;
+    private int scorePlayerTwo;
 
-    
-
-    private void Awake()
-    {
-        player1Btn0 = player1Btn1 = player1Btn2 = player1Btn3 = 1;
-    }
+    public SoundManager soundMgr;
 
     // Start is called before the first frame update
     void Start()
     {
-        // on definit les 3 pin comme etant des sorties pour les 3 leds
-        UduinoManager.Instance.pinMode(9, PinMode.Output);
-        UduinoManager.Instance.pinMode(10, PinMode.Output);
-        UduinoManager.Instance.pinMode(11, PinMode.Output);
-
-        canRoundBegin = false;
-
+        UduinoManager.Instance.OnBoardConnected += OnBoardConnected;
+        
         round = 1;
+        scorePlayerOne = scorePlayerTwo = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // on lit en continu les 4 pin des boutons du PLAYER 1
-        player1Btn0 = UduinoManager.Instance.digitalRead(2);
-        player1Btn1 = UduinoManager.Instance.digitalRead(3);
-        player1Btn2 = UduinoManager.Instance.digitalRead(4);
-        player1Btn3 = UduinoManager.Instance.digitalRead(5);
+        if (playerOneController != null)
+            playerOneController.Update();
+
+        if (playerTwoController != null)
+            playerTwoController.Update();
 
         CheckPlayerReady();
 
-        if (canRoundBegin && round <= 3 && !roundIsPlayed)
+        if (roundCanBegin && round <= 3)
         {
             PlayRound();
+            if(weaponChoosed)
+                CheckCombinaison();
         }
-        else
-        {
-            //Dire qui est le winner
-        }
+    }
 
-        CheckCombinaison();
+    void OnBoardConnected(UduinoDevice connectedDevice)
+    {
+        //You can launch specific functions here
+        if (connectedDevice.name == "firstUduino")
+        {
+            playerOneController = new PlayerController(connectedDevice);
+        }
+        else if (connectedDevice.name == "secondUduino")
+        {
+            playerTwoController = new PlayerController(connectedDevice);
+        }
     }
 
     void CheckPlayerReady()
     {
-        StartCoroutine("TimeBeforeGameCanStart");
-        if (player1Btn3 == 0 && canGameStart)    // si le PLAYER 1 appuie sur les 4 boutons
+        if (!gameHasBegun)
         {
-            canRoundBegin = true;
-            Debug.Log("Round can begin");
+            StartCoroutine("TimeBeforeGameCanStart");
+            if (playerOneController.GetButtonDown(3) && playerTwoController.GetButtonDown(3) && gameCanStart)    // si le PLAYER 1 appuie sur les 4 boutons
+            {
+                roundCanBegin = true;
+                Debug.Log("Round can begin");
+                gameHasBegun = true;
+
+                //JOUER ROUND 1
+                //soundMgr.PlayAudioOn1("annonceRound1");
+            }
         }
     }
 
     void CheckCombinaison()
     {
-        // si le joueur appuie sur les bons boutons correspondants à l'arme GUN
-        if (player1Btn0 == 0 && player1Btn1 == 0 && weaponOnPlayer2 == 9)
+        // si le joueur 1 appuie sur les bons boutons correspondant à l'arme allumée sur le joueur 2
+        if ((playerOneController.GetButtonDown(0) && playerOneController.GetButtonDown(1) && weaponOnPlayer2 == 9)
+            || (playerOneController.GetButtonDown(1) && playerOneController.GetButtonDown(2) && weaponOnPlayer2 == 10)
+            || (playerOneController.GetButtonDown(0) && playerOneController.GetButtonDown(1) && playerOneController.GetButtonDown(2) 
+            && playerOneController.GetButtonDown(3) && weaponOnPlayer2 == 11))
         {
-            // on check s'il a été le plus rapide
-            Debug.Log("Le joueur a réussi le GUN");
+            if(weaponOnPlayer2 == 9)
+            {
+                // JOUER GUN
+                //soundMgr.PlayAudioOn1("bruitPan");
+            }
+            else if (weaponOnPlayer2 == 10)
+            {
+                // JOUER SPIDERBLAST
+                //soundMgr.PlayAudioOn1("bruitSpider");
+            }
+            else if (weaponOnPlayer2 == 11)
+            {
+                // JOUER LASSO
+                //soundMgr.PlayAudioOn1("bruitLasso");
+            }
+            scorePlayerOne++;
             isPlaying = false;
+            roundCanBegin = false;
+            NextRound();
         }
 
-        // si le joueur appuie sur les bons boutons correspondants à l'arme SPIDERBLAST
-        if (player1Btn1 == 0 && player1Btn2 == 0 && weaponOnPlayer2 == 10)
+        // si le joueur 2 appuie sur les bons boutons correspondant à l'arme allumée sur le joueur 1
+        if ((playerTwoController.GetButtonDown(0) && playerTwoController.GetButtonDown(1) && weaponOnPlayer1 == 9)
+            || (playerTwoController.GetButtonDown(1) && playerTwoController.GetButtonDown(2) && weaponOnPlayer1 == 10)
+            || (playerTwoController.GetButtonDown(0) && playerTwoController.GetButtonDown(1) && playerTwoController.GetButtonDown(2)
+            && playerTwoController.GetButtonDown(3) && weaponOnPlayer1 == 11))
         {
-            // on check s'il a été le plus rapide
-            Debug.Log("Le joueur a réussi le SPIDERBLAST");
+            if (weaponOnPlayer1 == 9)
+            {
+                // JOUER GUN
+                //soundMgr.PlayAudioOn2("bruitPan");
+            }
+            else if (weaponOnPlayer1 == 10)
+            {
+                // JOUER SPIDERBLAST
+                //soundMgr.PlayAudioOn2("bruitSpider");
+            }
+            else if (weaponOnPlayer1 == 11)
+            {
+                // JOUER LASSO
+                //soundMgr.PlayAudioOn2("bruitLasso");
+            }
+            scorePlayerTwo++;
             isPlaying = false;
-        }
-
-        // si le joueur appuie sur les bons boutons correspondants à l'arme LASSO
-        if (player1Btn0 == 0 && player1Btn1 == 0 && player1Btn2 == 0 && player1Btn3 == 0 && weaponOnPlayer2 == 11)
-        {
-            // on check s'il a été le plus rapide
-            Debug.Log("Le joueur a réussi le LASSO");
-            isPlaying = false;
+            roundCanBegin = false;
+            NextRound();
         }
     }
 
     void PlayRound()
     {
-        // mettre un temps d'attente
-        //StartCoroutine("TimeBeforeWeaponDisplay");
+        isPlaying = true;
 
         if (!weaponChoosed)
         {
+            weaponOnPlayer1 = Random.Range(9, 12);
             weaponOnPlayer2 = Random.Range(9, 12);
-            //weaponOnPlayer1 = Random.Range(6, 8);
+            Debug.Log("Arme sur PLAYER 1 :  " + weaponOnPlayer1);
+            Debug.Log("Arme sur PLAYER 2 :  " + weaponOnPlayer2);
 
-            Debug.Log("GOOOOO ! l'arme qui devrait etre sélectionnée est :  " + weaponOnPlayer2);
-
-            isPlaying = true;
-
+            //JOUER 3,2,1 SHOT
+            StartCoroutine("TimeBeforeWeaponDisplay");
             weaponChoosed = true;
         }
 
         // tant que le joueur n'a pas trouvé la bonne combinaison ou que le round n'est pas fini
         if (isPlaying)
         {
-            // allumer directement la led en question
-            UduinoManager.Instance.digitalWrite(weaponOnPlayer2, State.HIGH);
-            Debug.Log("est dans le if is playing");
+            // allumer directement les leds en question
+            playerOneController.LedOn(weaponOnPlayer1);
+            playerTwoController.LedOn(weaponOnPlayer2);
+            Debug.Log("Leds allumées");
         }
-        
-        // le round est terminé
-        roundFinished = true;
-        round++;
+        else 
+        {
+            playerOneController.LedOff(weaponOnPlayer1);
+            playerTwoController.LedOff(weaponOnPlayer2);
+        }
+    }
 
-        roundIsPlayed = true;
+    public void NextRound()
+    {
+        round++;
+        StartCoroutine("TimeBeforeRoundCanStart");
+        if (round <= 3)
+        {
+            if (round == 2)
+            {
+                //Jouer ROUND 2
+            }
+            if (round == 3)
+            {
+                //Jouer ROUND 3
+            }
+            Debug.Log("Le round " + round + "commence");
+            StartCoroutine("TimeBeforeRoundCanStart");
+            roundCanBegin = true;
+        }
+        else
+        {
+            if (scorePlayerOne > scorePlayerTwo)
+            {
+                //Jouer PLAYER 1 WINS
+            } else if (scorePlayerTwo > scorePlayerOne)
+            {
+                //Jouer PLAYER 2 WINS
+            }
+        }
     }
 
     IEnumerator TimeBeforeWeaponDisplay()
     {
-        // on définit aléatoirement l'arme qui va s'allumer sur le torse du player 1 et 2, qui est en fait un choix entre les 3 pin des led
-        if (!weaponChoosed)
-        {
-            weaponOnPlayer2 = Random.Range(6, 8);
-            //weaponOnPlayer1 = Random.Range(6, 8);
-
-            Debug.Log("GOOOOO ! l'arme qui devrait etre sélectionnée est :  " + weaponOnPlayer2);
-
-            //isPlaying = true;
-
-            weaponChoosed = true;
-        }
-
         yield return new WaitForSeconds(3f);
+    }
+
+    IEnumerator TimeBeforeRoundCanStart()
+    {
+        yield return new WaitForSeconds(5f);
     }
 
     IEnumerator TimeBeforeGameCanStart()
     {
         yield return new WaitForSeconds(3f);
-        canGameStart = true;
+        gameCanStart = true;
     }
 }

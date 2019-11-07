@@ -29,9 +29,11 @@ public class PlayerController
         UduinoManager.Instance.pinMode(controller, 9, PinMode.Output);
         UduinoManager.Instance.pinMode(controller, 10, PinMode.Output);
         UduinoManager.Instance.pinMode(controller, 11, PinMode.Output);
+        /*
         UduinoManager.Instance.digitalWrite(controller, 9, State.HIGH);
         UduinoManager.Instance.digitalWrite(controller, 10, State.HIGH);
         UduinoManager.Instance.digitalWrite(controller, 11, State.HIGH);
+        */
     }
 
     // Update is called once per frame
@@ -93,5 +95,15 @@ public class PlayerController
             buttonUp[i] = false;
         }
         resetNeeded = true;
+    }
+
+    public void LedOn(int pin)
+    {
+        UduinoManager.Instance.digitalWrite(controller, pin, State.HIGH);
+    }
+
+    public void LedOff(int pin)
+    {
+        UduinoManager.Instance.digitalWrite(controller, pin, State.LOW);
     }
 }

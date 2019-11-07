@@ -33,10 +33,10 @@ public class SoundManager : MonoBehaviour
     private AudioClip bruitPan;
 
     [SerializeField]
-    private AudioClip bruitZbra;
+    private AudioClip bruitSpider;
 
     [SerializeField]
-    private AudioClip bruitPshuit;
+    private AudioClip bruitLasso;
 
     [SerializeField]
     private AudioClip annonceRound1;
@@ -122,12 +122,12 @@ public class SoundManager : MonoBehaviour
                 audioSource1.clip = bruitPan;
                 break;
 
-            case "bruitZbra":
-                audioSource1.clip = bruitZbra;
+            case "bruitSpider":
+                audioSource1.clip = bruitSpider;
                 break;
 
-            case "bruitPshuit":
-                audioSource1.clip = bruitPshuit;
+            case "bruitLasso":
+                audioSource1.clip = bruitLasso;
                 break;
 
             case "annonceRound1":
@@ -190,12 +190,12 @@ public class SoundManager : MonoBehaviour
                 audioSource2.clip = bruitPan;
                 break;
 
-            case "bruitZbra":
-                audioSource2.clip = bruitZbra;
+            case "bruitSpider":
+                audioSource2.clip = bruitSpider;
                 break;
 
-            case "bruitPshuit":
-                audioSource2.clip = bruitPshuit;
+            case "bruitLasso":
+                audioSource2.clip = bruitLasso;
                 break;
 
             case "annonceRound1":
