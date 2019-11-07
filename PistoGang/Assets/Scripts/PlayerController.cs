@@ -5,10 +5,11 @@ using Uduino;
 
 public class PlayerController
 {
-    UduinoDevice controller = null;
-    int[] buttonLastFrameArray = new int[4];
-    bool[] buttonDown = new bool[4];
-
+    private UduinoDevice controller = null;
+    private int[] buttonLastFrameArray = new int[4];
+    private bool[] buttonDown = new bool[4];
+    private bool[] buttonUp = new bool[4];
+    private bool resetNeeded;
     public PlayerController(UduinoDevice controller)
     {
         //INIT CONTROLLER
@@ -39,12 +40,28 @@ public class PlayerController
         for (int i = 0; i < 4; i++)
         {
             int value = UduinoManager.Instance.digitalRead(controller, i+2);
-            if (value == 0 && buttonLastFrameArray[i] == 1)
+            if (!resetNeeded)
             {
-                buttonDown[i] = true;
+                if (value == 0 && buttonLastFrameArray[i] == 1)
+                    buttonDown[i] = true;
+                else if ( value == 1 && buttonLastFrameArray[i] == 0)
+                    buttonUp[i] = true;
+                else
+                {
+                    buttonDown[i] = false;
+                    buttonUp[i] = false;
+                }
             }
             else
-                buttonDown[i] = false;
+            {
+                if (buttonLastFrameArray[0] == 1 &&
+                    buttonLastFrameArray[1] == 1 &&
+                    buttonLastFrameArray[2] == 1 &&
+                    buttonLastFrameArray[3] == 1)
+                {
+                    resetNeeded = false;
+                }
+            }
             buttonLastFrameArray[i] = value;
         }
     }
@@ -57,5 +74,25 @@ public class PlayerController
     public bool GetButtonDown(int pin)
     {
         return buttonDown[pin];
+    }
+
+    public bool GetButtonUp(int pin)
+    {
+        return buttonUp[pin];
+    }
+
+    public bool GetButton(int pin)
+    {
+        return buttonLastFrameArray[pin] == 0 ? true : false;
+    }
+
+    public void ResetInputs()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            buttonDown[i] = false;
+            buttonUp[i] = false;
+        }
+        resetNeeded = true;
     }
 }
