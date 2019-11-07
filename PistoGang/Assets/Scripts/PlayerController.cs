@@ -9,7 +9,7 @@ public class PlayerController
     private int[] buttonLastFrameArray = new int[4];
     private bool[] buttonDown = new bool[4];
     private bool[] buttonUp = new bool[4];
-    private bool resetNeeded;
+    private bool resetNeeded = false;
     public PlayerController(UduinoDevice controller)
     {
         //INIT CONTROLLER
@@ -29,19 +29,20 @@ public class PlayerController
         UduinoManager.Instance.pinMode(controller, 14, PinMode.PWM);
         UduinoManager.Instance.pinMode(controller, 15, PinMode.PWM);
         UduinoManager.Instance.pinMode(controller, 16, PinMode.PWM);
-        UduinoManager.Instance.analogWrite(controller, 14, 255);
-        UduinoManager.Instance.analogWrite(controller, 15, 255);
-        UduinoManager.Instance.analogWrite(controller, 16, 255);
+        UduinoManager.Instance.pinMode(controller, 17, PinMode.PWM);
+        //UduinoManager.Instance.analogWrite(controller, 14, 255);
+        //UduinoManager.Instance.analogWrite(controller, 15, 255);
+        //UduinoManager.Instance.analogWrite(controller, 16, 255);
     }
 
     // Update is called once per frame
     public void Update()
     {
-        for (int i = 0; i < 4; i++)
+        if (!resetNeeded)
         {
-            int value = UduinoManager.Instance.digitalRead(controller, i+2);
-            if (!resetNeeded)
+            for (int i = 0; i < 4; i++)
             {
+                int value = UduinoManager.Instance.digitalRead(controller, i + 2);
                 if (value == 0 && buttonLastFrameArray[i] == 1)
                     buttonDown[i] = true;
                 else if ( value == 1 && buttonLastFrameArray[i] == 0)
@@ -51,18 +52,21 @@ public class PlayerController
                     buttonDown[i] = false;
                     buttonUp[i] = false;
                 }
+                Debug.Log("boutton Up n°" + i + ":" + buttonUp[i]);
+                if (buttonUp[i])
+                    UduinoManager.Instance.analogWrite(controller, i + 14, 255);
+                else
+                    UduinoManager.Instance.analogWrite(controller, i + 14, 0);
+                buttonLastFrameArray[i] = value;
             }
-            else
-            {
-                if (buttonLastFrameArray[0] == 1 &&
-                    buttonLastFrameArray[1] == 1 &&
-                    buttonLastFrameArray[2] == 1 &&
-                    buttonLastFrameArray[3] == 1)
-                {
-                    resetNeeded = false;
-                }
-            }
-            buttonLastFrameArray[i] = value;
+        }
+
+        if (UduinoManager.Instance.digitalRead(controller, 2) == 1 &&
+            UduinoManager.Instance.digitalRead(controller, 3) == 1 &&
+            UduinoManager.Instance.digitalRead(controller, 4) == 1 &&
+            UduinoManager.Instance.digitalRead(controller, 5) == 1)
+        {
+            resetNeeded = false;
         }
     }
 
