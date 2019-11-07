@@ -52,11 +52,7 @@ public class PlayerController
                     buttonDown[i] = false;
                     buttonUp[i] = false;
                 }
-                Debug.Log("boutton Up n°" + i + ":" + buttonUp[i]);
-                if (buttonUp[i])
-                    UduinoManager.Instance.analogWrite(controller, i + 14, 255);
-                else
-                    UduinoManager.Instance.analogWrite(controller, i + 14, 0);
+
                 buttonLastFrameArray[i] = value;
             }
         }
