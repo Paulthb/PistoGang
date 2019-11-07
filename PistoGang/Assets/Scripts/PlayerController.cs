@@ -26,13 +26,12 @@ public class PlayerController
         buttonLastFrameArray[3] = 1;
 
         //INIT LED
-        UduinoManager.Instance.pinMode(controller, 14, PinMode.PWM);
-        UduinoManager.Instance.pinMode(controller, 15, PinMode.PWM);
-        UduinoManager.Instance.pinMode(controller, 16, PinMode.PWM);
-        UduinoManager.Instance.pinMode(controller, 17, PinMode.PWM);
-        //UduinoManager.Instance.analogWrite(controller, 14, 255);
-        //UduinoManager.Instance.analogWrite(controller, 15, 255);
-        //UduinoManager.Instance.analogWrite(controller, 16, 255);
+        UduinoManager.Instance.pinMode(controller, 9, PinMode.Output);
+        UduinoManager.Instance.pinMode(controller, 10, PinMode.Output);
+        UduinoManager.Instance.pinMode(controller, 11, PinMode.Output);
+        UduinoManager.Instance.digitalWrite(controller, 9, State.HIGH);
+        UduinoManager.Instance.digitalWrite(controller, 10, State.HIGH);
+        UduinoManager.Instance.digitalWrite(controller, 11, State.HIGH);
     }
 
     // Update is called once per frame

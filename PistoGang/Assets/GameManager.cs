@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     private bool isPlaying;
     private bool roundFinished;
     private bool weaponChoosed;
+    private bool roundIsPlayed;
+
     private int quickestPlayer;
     private int round;
 
@@ -22,6 +24,8 @@ public class GameManager : MonoBehaviour
     private int player2Btn, player2Btn1, player2Btn2, player2Btn3;     // l'état 0 ou 1 des boutons de la main, 3 etant celui le plus près du pouce
     private int weaponOnPlayer2;
 
+    
+
     private void Awake()
     {
         player1Btn0 = player1Btn1 = player1Btn2 = player1Btn3 = 1;
@@ -31,9 +35,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // on definit les 3 pin comme etant des sorties pour les 3 leds
-        UduinoManager.Instance.pinMode(6, PinMode.Output);
-        UduinoManager.Instance.pinMode(7, PinMode.Output);
-        UduinoManager.Instance.pinMode(8, PinMode.Output);
+        UduinoManager.Instance.pinMode(9, PinMode.Output);
+        UduinoManager.Instance.pinMode(10, PinMode.Output);
+        UduinoManager.Instance.pinMode(11, PinMode.Output);
 
         canRoundBegin = false;
 
@@ -51,9 +55,13 @@ public class GameManager : MonoBehaviour
 
         CheckPlayerReady();
 
-        if (canRoundBegin && round <= 3)
+        if (canRoundBegin && round <= 3 && !roundIsPlayed)
         {
             PlayRound();
+        }
+        else
+        {
+            //Dire qui est le winner
         }
 
         CheckCombinaison();
@@ -62,7 +70,7 @@ public class GameManager : MonoBehaviour
     void CheckPlayerReady()
     {
         StartCoroutine("TimeBeforeGameCanStart");
-        if (player1Btn0 == 0 && player1Btn1 == 0 && player1Btn2 == 0 && player1Btn3 == 0 && canGameStart)    // si le PLAYER 1 appuie sur les 4 boutons
+        if (player1Btn3 == 0 && canGameStart)    // si le PLAYER 1 appuie sur les 4 boutons
         {
             canRoundBegin = true;
             Debug.Log("Round can begin");
@@ -72,7 +80,7 @@ public class GameManager : MonoBehaviour
     void CheckCombinaison()
     {
         // si le joueur appuie sur les bons boutons correspondants à l'arme GUN
-        if (player1Btn0 == 0 && player1Btn1 == 0 && weaponOnPlayer2 == 6)
+        if (player1Btn0 == 0 && player1Btn1 == 0 && weaponOnPlayer2 == 9)
         {
             // on check s'il a été le plus rapide
             Debug.Log("Le joueur a réussi le GUN");
@@ -80,7 +88,7 @@ public class GameManager : MonoBehaviour
         }
 
         // si le joueur appuie sur les bons boutons correspondants à l'arme SPIDERBLAST
-        if (player1Btn1 == 0 && player1Btn2 == 0 && weaponOnPlayer2 == 7)
+        if (player1Btn1 == 0 && player1Btn2 == 0 && weaponOnPlayer2 == 10)
         {
             // on check s'il a été le plus rapide
             Debug.Log("Le joueur a réussi le SPIDERBLAST");
@@ -88,7 +96,7 @@ public class GameManager : MonoBehaviour
         }
 
         // si le joueur appuie sur les bons boutons correspondants à l'arme LASSO
-        if (player1Btn0 == 0 && player1Btn1 == 0 && player1Btn2 == 0 && player1Btn3 == 0 && weaponOnPlayer2 == 8)
+        if (player1Btn0 == 0 && player1Btn1 == 0 && player1Btn2 == 0 && player1Btn3 == 0 && weaponOnPlayer2 == 11)
         {
             // on check s'il a été le plus rapide
             Debug.Log("Le joueur a réussi le LASSO");
@@ -99,8 +107,37 @@ public class GameManager : MonoBehaviour
     void PlayRound()
     {
         // mettre un temps d'attente
-        StartCoroutine("TimeBeforeWeaponDisplay");
+        //StartCoroutine("TimeBeforeWeaponDisplay");
 
+        if (!weaponChoosed)
+        {
+            weaponOnPlayer2 = Random.Range(9, 12);
+            //weaponOnPlayer1 = Random.Range(6, 8);
+
+            Debug.Log("GOOOOO ! l'arme qui devrait etre sélectionnée est :  " + weaponOnPlayer2);
+
+            isPlaying = true;
+
+            weaponChoosed = true;
+        }
+
+        // tant que le joueur n'a pas trouvé la bonne combinaison ou que le round n'est pas fini
+        if (isPlaying)
+        {
+            // allumer directement la led en question
+            UduinoManager.Instance.digitalWrite(weaponOnPlayer2, State.HIGH);
+            Debug.Log("est dans le if is playing");
+        }
+        
+        // le round est terminé
+        roundFinished = true;
+        round++;
+
+        roundIsPlayed = true;
+    }
+
+    IEnumerator TimeBeforeWeaponDisplay()
+    {
         // on définit aléatoirement l'arme qui va s'allumer sur le torse du player 1 et 2, qui est en fait un choix entre les 3 pin des led
         if (!weaponChoosed)
         {
@@ -109,31 +146,17 @@ public class GameManager : MonoBehaviour
 
             Debug.Log("GOOOOO ! l'arme qui devrait etre sélectionnée est :  " + weaponOnPlayer2);
 
+            //isPlaying = true;
+
             weaponChoosed = true;
         }
-        
-        // tant que le joueur n'a pas trouvé la bonne combinaison ou que le round n'est pas fini
-        while (isPlaying)
-        {
-            // allumer directement la led en question
-            UduinoManager.Instance.digitalWrite(weaponOnPlayer2, 255);
-        }
-        
-        // le round est terminé
-        roundFinished = true;
-        round++;
 
-        return;
-    }
-
-    IEnumerator TimeBeforeWeaponDisplay()
-    {
         yield return new WaitForSeconds(3f);
     }
 
     IEnumerator TimeBeforeGameCanStart()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         canGameStart = true;
     }
 }
