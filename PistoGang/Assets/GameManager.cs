@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Uduino;
 using UnityEngine.UI;
+using System.IO.Ports;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,10 +31,25 @@ public class GameManager : MonoBehaviour
 
     public SoundManager soundMgr;
 
+    private void Awake()
+    {
+        playerOneController = new PlayerController(SerialPort.GetPortNames()[0][SerialPort.GetPortNames()[0].Length -1]);
+        playerTwoController = new PlayerController(SerialPort.GetPortNames()[1][SerialPort.GetPortNames()[1].Length - 1]);
+        //Gamepads = new gamepads[SerialPort.GetPortNames().Length];
+        /*
+        int i = 0;
+        foreach (string str in SerialPort.GetPortNames())
+        {
+            Debug.Log(str);
+            Gamepads[i] = new gamepads((int)char.GetNumericValue(str[str.Length - 1]));
+            i++;
+        }
+        */
+    }
     // Start is called before the first frame update
     void Start()
     {
-        UduinoManager.Instance.OnBoardConnected += OnBoardConnected;
+        //UduinoManager.Instance.OnBoardConnected += OnBoardConnected;
         //UduinoManager.Instance.OnDataReceived += OnDataReceived;
 
         StartCoroutine("WaitTwoSecondsForCheck");
@@ -47,13 +63,13 @@ public class GameManager : MonoBehaviour
     {
         if (playerOneController != null)
         {
-            playerOneController.Update();
+            playerOneController.Update(Time.deltaTime);
             //playerOneController.SendCommand();
         }
 
         if (playerTwoController != null)
         {
-            playerTwoController.Update();
+            playerTwoController.Update(Time.deltaTime);
             //playerTwoController.SendCommand();
         }
 
@@ -75,6 +91,7 @@ public class GameManager : MonoBehaviour
         else if (device.name == "secondUduino") sensorTwo = int.Parse(data);
     }
     */
+    /*
     void OnBoardConnected(UduinoDevice connectedDevice)
     {
         //You can launch specific functions here
@@ -87,19 +104,17 @@ public class GameManager : MonoBehaviour
             playerTwoController = new PlayerController(connectedDevice);
         }
     }
+    */
 
     void CheckPlayerReady()
     {
+        Debug.Log((playerOneController != null) +"/"+ (playerTwoController != null));
         if (playerOneController != null && playerTwoController != null)
         {
-            print("First Device : " + playerOneController.GetUduinoDevice().name);
-            print("Second Device : " + playerTwoController.GetUduinoDevice().name);
-            print("Input First Device : " + playerOneController.GetButtonDown(3));
-            print("Input Second Device : " + playerTwoController.GetButtonDown(3));
             if (!gameHasBegun)
             {
-                StartCoroutine("TimeBeforeGameCanStart");
-                if (playerOneController.GetButtonDown(3) && playerTwoController.GetButtonDown(3) && gameCanStart)    // si le PLAYER 1 appuie sur les 4 boutons
+                Debug.Log("player1:" + playerOneController.GetButtonDown(3) + "/player2:" + playerTwoController.GetButtonDown(3));
+                if (playerOneController.GetButtonDown(3) && playerTwoController.GetButtonDown(3))    // si le PLAYER 1 appuie sur les 4 boutons
                 {
                     roundCanBegin = true;
                     Debug.Log("Round can begin");
@@ -115,12 +130,12 @@ public class GameManager : MonoBehaviour
     void CheckCombinaison()
     {
         // si le joueur 1 appuie sur les bons boutons correspondant à l'arme allumée sur le joueur 2
-        if ((playerOneController.GetButtonDown(0) && playerOneController.GetButtonDown(1) && weaponOnPlayer2 == 9)
-            || (playerOneController.GetButtonDown(1) && playerOneController.GetButtonDown(2) && weaponOnPlayer2 == 10)
+        if ((playerOneController.GetButtonDown(0) && playerOneController.GetButtonDown(1) && weaponOnPlayer2 == 1)
+            || (playerOneController.GetButtonDown(1) && playerOneController.GetButtonDown(2) && weaponOnPlayer2 == 2)
             || (playerOneController.GetButtonDown(0) && playerOneController.GetButtonDown(1) && playerOneController.GetButtonDown(2) 
-            && playerOneController.GetButtonDown(3) && weaponOnPlayer2 == 11))
+            && playerOneController.GetButtonDown(3) && weaponOnPlayer2 == 3))
         {
-            if(weaponOnPlayer2 == 9)
+            if(weaponOnPlayer2 == 1)
             {
                 // JOUER GUN
                 //soundMgr.PlayAudioOn1("bruitPan");
@@ -128,7 +143,7 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn1("victoirePistolet");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
-            else if (weaponOnPlayer2 == 10)
+            else if (weaponOnPlayer2 == 2)
             {
                 // JOUER SPIDERBLAST
                 //soundMgr.PlayAudioOn1("bruitSpider");
@@ -136,7 +151,7 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn1("victoireSpider");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
-            else if (weaponOnPlayer2 == 11)
+            else if (weaponOnPlayer2 == 3)
             {
                 // JOUER LASSO
                 //soundMgr.PlayAudioOn1("bruitLasso");
@@ -144,6 +159,8 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn1("victoireIndiana");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
+            playerOneController.ResetInputs();
+            playerTwoController.ResetInputs();
             scorePlayerOne++;
             isPlaying = false;
             roundCanBegin = false;
@@ -151,12 +168,12 @@ public class GameManager : MonoBehaviour
         }
 
         // si le joueur 2 appuie sur les bons boutons correspondant à l'arme allumée sur le joueur 1
-        if ((playerTwoController.GetButtonDown(0) && playerTwoController.GetButtonDown(1) && weaponOnPlayer1 == 9)
-            || (playerTwoController.GetButtonDown(1) && playerTwoController.GetButtonDown(2) && weaponOnPlayer1 == 10)
+        if ((playerTwoController.GetButtonDown(0) && playerTwoController.GetButtonDown(1) && weaponOnPlayer1 == 1)
+            || (playerTwoController.GetButtonDown(1) && playerTwoController.GetButtonDown(2) && weaponOnPlayer1 == 2)
             || (playerTwoController.GetButtonDown(0) && playerTwoController.GetButtonDown(1) && playerTwoController.GetButtonDown(2)
-            && playerTwoController.GetButtonDown(3) && weaponOnPlayer1 == 11))
+            && playerTwoController.GetButtonDown(3) && weaponOnPlayer1 == 3))
         {
-            if (weaponOnPlayer1 == 9)
+            if (weaponOnPlayer1 == 1)
             {
                 // JOUER GUN
                 //soundMgr.PlayAudioOn2("bruitPan");
@@ -164,7 +181,7 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn2("victoirePistolet");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
-            else if (weaponOnPlayer1 == 10)
+            else if (weaponOnPlayer1 == 2)
             {
                 // JOUER SPIDERBLAST
                 //soundMgr.PlayAudioOn2("bruitSpider");
@@ -172,7 +189,7 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn2("victoireSpider");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
-            else if (weaponOnPlayer1 == 11)
+            else if (weaponOnPlayer1 == 3)
             {
                 // JOUER LASSO
                 //soundMgr.PlayAudioOn2("bruitLasso");
@@ -180,6 +197,8 @@ public class GameManager : MonoBehaviour
                 //soundMgr.PlayAudioOn2("victoireIndiana");
                 StartCoroutine("TimeBeforeRoundCanStart");
             }
+            playerOneController.ResetInputs();
+            playerTwoController.ResetInputs();
             scorePlayerTwo++;
             isPlaying = false;
             roundCanBegin = false;
@@ -193,8 +212,8 @@ public class GameManager : MonoBehaviour
 
         if (!weaponChoosed)
         {
-            weaponOnPlayer1 = Random.Range(9, 12);
-            weaponOnPlayer2 = Random.Range(9, 12);
+            weaponOnPlayer1 = Random.Range(1,4);
+            weaponOnPlayer2 = Random.Range(1,4);
             Debug.Log("Arme sur PLAYER 1 :  " + weaponOnPlayer1);
             Debug.Log("Arme sur PLAYER 2 :  " + weaponOnPlayer2);
 
@@ -207,15 +226,21 @@ public class GameManager : MonoBehaviour
         // tant que le joueur n'a pas trouvé la bonne combinaison ou que le round n'est pas fini
         if (isPlaying)
         {
+            //playerOneController.SetLed(0);
+            //playerTwoController.SetLed(0);
+            playerOneController.SetLed(weaponOnPlayer1);
+            playerTwoController.SetLed(weaponOnPlayer2);
             // allumer directement les leds en question
-            playerOneController.LedOn(weaponOnPlayer1);
-            playerTwoController.LedOn(weaponOnPlayer2);
+            //playerOneController.LedOn(weaponOnPlayer1);
+            //playerTwoController.LedOn(weaponOnPlayer2);
             Debug.Log("Leds allumées");
         }
         else 
         {
-            playerOneController.LedOff(weaponOnPlayer1);
-            playerTwoController.LedOff(weaponOnPlayer2);
+            playerOneController.SetLed(0);
+            playerTwoController.SetLed(0);
+            //playerOneController.LedOff(weaponOnPlayer1);
+            //playerTwoController.LedOff(weaponOnPlayer2);
         }
     }
 
@@ -223,6 +248,9 @@ public class GameManager : MonoBehaviour
     {
         round++;
         StartCoroutine("TimeBeforeRoundCanStart");
+        weaponChoosed = false;
+        playerOneController.SetLed(0);
+        playerTwoController.SetLed(0);
         if (round <= 3)
         {
             if (round == 2)
