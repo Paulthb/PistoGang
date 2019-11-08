@@ -20,6 +20,10 @@ public class PlayerController
         UduinoManager.Instance.pinMode(controller, 3, PinMode.Input_pullup);
         UduinoManager.Instance.pinMode(controller, 4, PinMode.Input_pullup);
         UduinoManager.Instance.pinMode(controller, 5, PinMode.Input_pullup);
+        UduinoManager.Instance.digitalWrite(controller, 2, 1);
+        UduinoManager.Instance.digitalWrite(controller, 3, 1);
+        UduinoManager.Instance.digitalWrite(controller, 4, 1);
+        UduinoManager.Instance.digitalWrite(controller, 5, 1);
         buttonLastFrameArray[0] = 1;
         buttonLastFrameArray[1] = 1;
         buttonLastFrameArray[2] = 1;
@@ -105,5 +109,15 @@ public class PlayerController
     public void LedOff(int pin)
     {
         UduinoManager.Instance.digitalWrite(controller, pin, State.LOW);
+    }
+
+    public void SendCommand()
+    {
+        UduinoManager.Instance.sendCommand("GetVariable");
+    }
+
+    public UduinoDevice GetUduinoDevice()
+    {
+        return controller;
     }
 }

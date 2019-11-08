@@ -314,6 +314,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114023058375386772, guid: bb5e6aea88a650f4a8317e74940b0ea4,
         type: 3}
+      propertyPath: OnDataReceivedEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114023058375386772, guid: bb5e6aea88a650f4a8317e74940b0ea4,
+        type: 3}
       propertyPath: pins.Array.data[0].arduinoName
       value: uduinoBoard
       objectReference: {fileID: 0}
@@ -562,6 +567,16 @@ PrefabInstance:
       propertyPath: pins.Array.data[6].prevPinMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114023058375386772, guid: bb5e6aea88a650f4a8317e74940b0ea4,
+        type: 3}
+      propertyPath: OnDataReceivedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114023058375386772, guid: bb5e6aea88a650f4a8317e74940b0ea4,
+        type: 3}
+      propertyPath: OnDataReceivedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb5e6aea88a650f4a8317e74940b0ea4, type: 3}
 --- !u!1 &452749285 stripped
@@ -765,6 +780,66 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1696490824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1696490826}
+  - component: {fileID: 1696490825}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1696490825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696490824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f212140acb714bd4f98368334c77f75b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource1: {fileID: 0}
+  audioSource2: {fileID: 0}
+  ambianceWestern: {fileID: 0}
+  victoireSpider: {fileID: 8300000, guid: 0605f696916b7ad4191f0daebb5a7dc4, type: 3}
+  victoireIndiana: {fileID: 8300000, guid: ce315808a5d168b40827b5c64fc9edb3, type: 3}
+  victoirePistolet: {fileID: 8300000, guid: c1044e33877ac60429c97a339c0cf987, type: 3}
+  winPlayer1: {fileID: 8300000, guid: aa3fa708575ff2f43a74275c25b76a39, type: 3}
+  winPlayer2: {fileID: 8300000, guid: 5fc346a750d49034a918429f4b1e47bf, type: 3}
+  decompteRound: {fileID: 8300000, guid: 206e08fa7ae1b454ba2bbc5d51ad7bb0, type: 3}
+  bruitPan: {fileID: 8300000, guid: dbc967d066b74a446ac54a0049748e39, type: 3}
+  bruitSpider: {fileID: 8300000, guid: bd621775ebd19254ab905dfade03adc2, type: 3}
+  bruitLasso: {fileID: 8300000, guid: f017672c972c107478d34025fc4ac442, type: 3}
+  annonceRound1: {fileID: 8300000, guid: 78669cae9e4fe9d428b105e19dfa0f06, type: 3}
+  annonceRound2: {fileID: 8300000, guid: 813b79f5766e44c4fa7ad37d0b27fcf7, type: 3}
+  annonceRound3: {fileID: 8300000, guid: 9d62519b80ad2ce4aa847f800b61f756, type: 3}
+  test: {fileID: 0}
+  test2: {fileID: 0}
+--- !u!4 &1696490826
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696490824}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1123.0844, y: 446.4393, z: -131.04193}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1990150522
 GameObject:
   m_ObjectHideFlags: 0

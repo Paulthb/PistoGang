@@ -21,10 +21,10 @@ public class SoundManager : MonoBehaviour
     private AudioClip victoirePistolet;
 
     [SerializeField]
-    private AudioClip defaitePlayer1;
+    private AudioClip winPlayer1;
 
     [SerializeField]
-    private AudioClip defaitePlayer2;
+    private AudioClip winPlayer2;
 
     [SerializeField]
     private AudioClip decompteRound;
@@ -106,12 +106,12 @@ public class SoundManager : MonoBehaviour
                 audioSource1.clip = victoirePistolet;
                 break;
 
-            case "defaitePlayer1":
-                audioSource1.clip = defaitePlayer1;
+            case "winPlayer1":
+                audioSource1.clip = winPlayer1;
                 break;
 
-            case "defaitePlayer2":
-                audioSource1.clip = defaitePlayer2;
+            case "winPlayer2":
+                audioSource1.clip = winPlayer2;
                 break;
 
             case "decompteRound":
@@ -175,11 +175,11 @@ public class SoundManager : MonoBehaviour
                 break;
 
             case "defaitePlayer1":
-                audioSource2.clip = defaitePlayer1;
+                audioSource2.clip = winPlayer1;
                 break;
 
             case "defaitePlayer2":
-                audioSource2.clip = defaitePlayer2;
+                audioSource2.clip = winPlayer2;
                 break;
 
             case "decompteRound":
